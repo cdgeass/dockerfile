@@ -1,0 +1,47 @@
+version: '3'
+services: 
+    elasticsearch:
+        image: elasticsearch:7.9.1
+        container_name: elasticsearch
+        environment: 
+            - bootstrap.memory_lock=true
+            - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+            - discovery.type=single-node
+        ulimits: 
+            memlock:
+                soft: -1
+                hard: -1
+        volumes: 
+            - elasticsearch:/usr/share/elasticsearch/data
+        ports: 
+            - 9200:9200
+            - 9300:9300
+        networks:
+            - elastic
+    kibana:
+        image: kibana:7.9.1
+        container_name: kibana
+        environment: 
+            - I18N_LOCALE=zh-CN
+            - XPACK_GRAPH_ENABLED=true
+            - TIMELION_ENABLED=true
+            - XPACK_MONITORING_COLLECTION_ENABLED=true
+        ports: 
+            - 5601:5601
+        networks: 
+            - elastic
+    cerebro: 
+        image: lmenezes/cerebro:0.9.2
+        container_name: cerebro
+        ports:
+            - 9000:9000
+        command:
+            - -Dhosts.0.host=http://elasticsearch:9200
+        networks:
+            - elastic
+volumes: 
+    elasticsearch:
+        driver: local
+networks:
+    elastic:
+        driver: bridge
