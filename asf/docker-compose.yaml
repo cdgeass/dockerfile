@@ -1,0 +1,12 @@
+version: '3'
+
+services: 
+  asf: 
+    image: justarchi/archisteamfarm
+    container_name: asf
+    user: 1000:1000
+    volumes: 
+      - ./config:/app/config
+    dns: 
+      - 8.8.8.8
+      - 1.1.1.1
